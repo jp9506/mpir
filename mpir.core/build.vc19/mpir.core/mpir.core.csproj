@@ -6,6 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\mpir.core\mpir.cs" Link="mpir.cs" />
+    <Compile Include="..\..\mpir.core\mpz_t.cs" Link="mpz_t.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\dll_mpir_gc\x64\Release\mpir.dll" Link="mpir.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
