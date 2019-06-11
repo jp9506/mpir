@@ -7,9 +7,10 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            mpz_t one = new mpz_t(1);
+            mpz_t three = 3;
+
             Console.WriteLine((int)one);
-            //Console.WriteLine(one.ToString());
+            Console.WriteLine(one.ToString());
         }
     }
 }
