@@ -20,7 +20,8 @@ namespace mpir.core
 
         public override string ToString()
         {
-            var res = new StringBuilder();
+            uint size = internals.mpir.__gmpz_sizeinbase(ref me, 10);
+            var res = new StringBuilder((int)size + 2);
             internals.mpir.__gmpz_get_str(res, 10, ref me);
             return res.ToString();
         }
@@ -116,5 +117,12 @@ namespace mpir.core
         public static explicit operator long(mpz_t x) => internals.mpir.__gmpz_get_si(ref x.me);
         public static explicit operator ulong(mpz_t x) => internals.mpir.__gmpz_get_ui(ref x.me);
         public static explicit operator string(mpz_t x) => x.ToString();
+        public static implicit operator mpz_t(short x) => new mpz_t(x);
+        public static implicit operator mpz_t(ushort x) => new mpz_t((ulong)x);
+        public static implicit operator mpz_t(int x) => new mpz_t(x);
+        public static implicit operator mpz_t(uint x) => new mpz_t((ulong)x);
+        public static implicit operator mpz_t(long x) => new mpz_t(x);
+        public static implicit operator mpz_t(ulong x) => new mpz_t(x);
+        public static implicit operator mpz_t(string x) => new mpz_t(x);
     }
 }

@@ -34,6 +34,7 @@ namespace mpir.core.internals
         [DllImport("mpir.dll")] public static extern void __gmpz_mul_ui(ref mpz_t rop, ref mpz_t op1, ulong op2);
         [DllImport("mpir.dll")] public static extern void __gmpz_neg(ref mpz_t rop, ref mpz_t op);
         [DllImport("mpir.dll")] public static extern void __gmpz_pow_ui(ref mpz_t rop, ref mpz_t op1, ulong op2);
+        [DllImport("mpir.dll")] public static extern uint __gmpz_sizeinbase(ref mpz_t op, int @base);
         [DllImport("mpir.dll")] public static extern void __gmpz_sub(ref mpz_t rop, ref mpz_t op1, ref mpz_t op2);
         [DllImport("mpir.dll")] public static extern void __gmpz_sub_ui(ref mpz_t rop, ref mpz_t op1, ulong op2);
         public static void __gmpz_ui_mod(ref mpz_t rop, ulong op1, ref mpz_t op2)

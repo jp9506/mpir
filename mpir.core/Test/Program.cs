@@ -7,10 +7,12 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            mpz_t three = 3;
-
-            Console.WriteLine((int)one);
-            Console.WriteLine(one.ToString());
+            mpz_t x = 3;
+            for (int i = 0; i < 10; i++)
+            {
+                x *= x;
+                Console.WriteLine(i + ": " + x.ToString());
+            }
         }
     }
 }
