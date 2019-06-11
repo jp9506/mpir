@@ -47,6 +47,7 @@ namespace mpir.core.internals
             __gmpz_init_set_ui(ref rop, op1);
             __gmpz_mul_ui(ref rop, ref rop, op2);
         }
+        [DllImport("mpir.dll")] public static extern void __gmpz_ui_pow_ui(ref mpz_t rop, ulong op1, ulong op2);
         [DllImport("mpir.dll")] public static extern void __gmpz_ui_sub(ref mpz_t rop, ulong op1, ref mpz_t op2);
 
         #endregion

@@ -1,5 +1,7 @@
 ﻿using mpir.core;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Test
 {
@@ -7,11 +9,20 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            mpz_t x = 3;
-            for (int i = 0; i < 10; i++)
+            Run().Wait();
+        }
+        static async Task Run()
+        {
+            var res = await Task.WhenAll(Enumerable.Range(0, 10).Select(async (i) =>
             {
-                x *= x;
-                Console.WriteLine(i + ": " + x.ToString());
+                mpz_t_async x = 3;
+                mpz_t_async xi = x ^ (ulong)i;
+                string s = await xi.ToString();
+                return i + ": " + s;
+            }));
+            foreach (var item in res)
+            {
+                Console.WriteLine(item);
             }
         }
     }

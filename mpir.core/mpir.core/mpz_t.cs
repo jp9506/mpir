@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace mpir.core
 {
@@ -29,7 +32,6 @@ namespace mpir.core
         public static readonly mpz_t ONE = new mpz_t(1);
         public static readonly mpz_t TWO = new mpz_t(2);
         public static readonly mpz_t TEN = new mpz_t(10);
-
 
         public static mpz_t operator +(mpz_t left, mpz_t right)
         {
@@ -114,9 +116,17 @@ namespace mpir.core
             return res;
         }
 
+        public static mpz_t operator ^(mpz_t left, ulong right)
+        {
+            var res = new mpz_t();
+            internals.mpir.__gmpz_pow_ui(ref res.me, ref left.me, right);
+            return res;
+        }
+
         public static explicit operator long(mpz_t x) => internals.mpir.__gmpz_get_si(ref x.me);
         public static explicit operator ulong(mpz_t x) => internals.mpir.__gmpz_get_ui(ref x.me);
         public static explicit operator string(mpz_t x) => x.ToString();
+
         public static implicit operator mpz_t(short x) => new mpz_t(x);
         public static implicit operator mpz_t(ushort x) => new mpz_t((ulong)x);
         public static implicit operator mpz_t(int x) => new mpz_t(x);
@@ -124,5 +134,87 @@ namespace mpir.core
         public static implicit operator mpz_t(long x) => new mpz_t(x);
         public static implicit operator mpz_t(ulong x) => new mpz_t(x);
         public static implicit operator mpz_t(string x) => new mpz_t(x);
+
+    }
+    public class mpz_t_async : IAsyncResult, IDisposable
+    {
+        private Task<mpz_t> t = null;
+
+        public mpz_t_async() : this(() => new mpz_t()) { }
+        public mpz_t_async(long x) : this(() => new mpz_t(x)) { }
+        public mpz_t_async(ulong x) : this(() => new mpz_t(x)) { }
+        public mpz_t_async(string x) : this(() => new mpz_t(x)) { }
+        private mpz_t_async(Func<mpz_t> f)
+        {
+            t = Task.Run(f);
+        }
+        private mpz_t_async(Func<Task<mpz_t>> f)
+        {
+            t = Task.Run(f);
+        }
+
+        public static readonly mpz_t_async ONE = new mpz_t_async(1);
+        public static readonly mpz_t_async TWO = new mpz_t_async(2);
+        public static readonly mpz_t_async TEN = new mpz_t_async(10);
+
+        public object AsyncState => t?.AsyncState;
+        public TaskAwaiter<mpz_t> GetAwaiter() => (t?.GetAwaiter()).GetValueOrDefault();
+        public bool IsCompleted => (t?.IsCompleted).GetValueOrDefault(false);
+        public WaitHandle AsyncWaitHandle => throw new NotImplementedException();
+        public bool CompletedSynchronously => throw new NotImplementedException();
+        public void Dispose()
+        {
+            t?.Dispose();
+        }
+
+        public new Task<string> ToString() => Task.Run(async () => (await this).ToString());
+
+        public static mpz_t_async operator +(mpz_t_async left, mpz_t_async right) => (mpz_t_async)(async () => (await left) + (await right));
+        public static mpz_t_async operator +(mpz_t_async left, mpz_t right) => (mpz_t_async)(async () => (await left) + right);
+        public static mpz_t_async operator +(mpz_t left, mpz_t_async right) => (mpz_t_async)(async () => left + (await right));
+        public static mpz_t_async operator +(mpz_t_async left, long right) => (mpz_t_async)(async () => (await left) + right);
+        public static mpz_t_async operator +(long left, mpz_t_async right) => (mpz_t_async)(async () => (await right) + left);
+        public static mpz_t_async operator +(mpz_t_async left, ulong right) => (mpz_t_async)(async () => (await left) + right);
+        public static mpz_t_async operator +(ulong left, mpz_t_async right) => (mpz_t_async)(async () => (await right) + left);
+
+        public static mpz_t_async operator -(mpz_t_async x) => (mpz_t_async)(async () => -(await x));
+        public static mpz_t_async operator -(mpz_t_async left, mpz_t_async right) => (mpz_t_async)(async () => (await left) - (await right));
+        public static mpz_t_async operator -(mpz_t_async left, mpz_t right) => (mpz_t_async)(async () => (await left) - right);
+        public static mpz_t_async operator -(mpz_t left, mpz_t_async right) => (mpz_t_async)(async () => left - (await right));
+        public static mpz_t_async operator -(mpz_t_async left, long right) => (mpz_t_async)(async () => (await left) - right);
+        public static mpz_t_async operator -(long left, mpz_t_async right) => (mpz_t_async)(async () => left - (await right));
+        public static mpz_t_async operator -(mpz_t_async left, ulong right) => (mpz_t_async)(async () => (await left) * right);
+        public static mpz_t_async operator -(ulong left, mpz_t_async right) => (mpz_t_async)(async () => left - (await right));
+
+        public static mpz_t_async operator *(mpz_t_async left, mpz_t_async right) => (mpz_t_async)(async () => (await left) * (await right));
+        public static mpz_t_async operator *(mpz_t_async left, mpz_t right) => (mpz_t_async)(async () => (await left) * right);
+        public static mpz_t_async operator *(mpz_t left, mpz_t_async right) => (mpz_t_async)(async () => left * (await right));
+        public static mpz_t_async operator *(mpz_t_async left, long right) => (mpz_t_async)(async () => (await left) * right);
+        public static mpz_t_async operator *(long left, mpz_t_async right) => (mpz_t_async)(async () => (await right) * left);
+        public static mpz_t_async operator *(mpz_t_async left, ulong right) => (mpz_t_async)(async () => (await left) * right);
+        public static mpz_t_async operator *(ulong left, mpz_t_async right) => (mpz_t_async)(async () => (await right) * left);
+
+        public static mpz_t_async operator %(mpz_t_async left, mpz_t_async right) => (mpz_t_async)(async () => (await left) % (await right));
+        public static mpz_t_async operator %(mpz_t_async left, mpz_t right) => (mpz_t_async)(async () => (await left) % right);
+        public static mpz_t_async operator %(mpz_t left, mpz_t_async right) => (mpz_t_async)(async () => left % (await right));
+        public static mpz_t_async operator %(mpz_t_async left, ulong right) => (mpz_t_async)(async () => (await left) % right);
+        public static mpz_t_async operator %(ulong left, mpz_t_async right) => (mpz_t_async)(async () => left % (await right));
+
+        public static mpz_t_async operator ^(mpz_t_async left, ulong right) => (mpz_t_async)(async () => (await left) ^ right);
+
+        public static explicit operator Task<long>(mpz_t_async x) => Task.Run(async () => (long)(await x));
+        public static explicit operator Task<ulong>(mpz_t_async x) => Task.Run(async () => (ulong)(await x));
+        public static explicit operator Task<string>(mpz_t_async x) => x.ToString();
+
+        public static implicit operator mpz_t_async(short x) => new mpz_t_async(x);
+        public static implicit operator mpz_t_async(ushort x) => new mpz_t_async((ulong)x);
+        public static implicit operator mpz_t_async(int x) => new mpz_t_async(x);
+        public static implicit operator mpz_t_async(uint x) => new mpz_t_async((ulong)x);
+        public static implicit operator mpz_t_async(long x) => new mpz_t_async(x);
+        public static implicit operator mpz_t_async(ulong x) => new mpz_t_async(x);
+        public static implicit operator mpz_t_async(string x) => new mpz_t_async(x);
+
+        public static explicit operator mpz_t_async(Func<mpz_t> f) => new mpz_t_async(f);
+        public static explicit operator mpz_t_async(Func<Task<mpz_t>> f) => new mpz_t_async(f);
     }
 }
