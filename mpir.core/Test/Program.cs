@@ -9,14 +9,19 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            Run().Wait();
+            //Run().Wait();
+            mpf_t x = -1;
+            Console.WriteLine(x.ToString());
+            x *= x;
+            Console.WriteLine(x.ToString());
+
         }
         static async Task Run()
         {
             var res = await Task.WhenAll(Enumerable.Range(0, 10).Select(async (i) =>
             {
-                mpz_t_async x = 3;
-                mpz_t_async xi = x ^ (ulong)i;
+                mpf_t_async x = -Math.PI;
+                mpf_t_async xi = x ^ (ulong)i;
                 string s = await xi.ToString();
                 return i + ": " + s;
             }));

@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace mpir.core
 {
-    public class mpz_t : IComparable<mpz_t>, IEquatable<mpz_t>
+    public class mpz_t : IComparable<mpz_t>, IEquatable<mpz_t>, IComparable<long>, IEquatable<long>, IComparable<ulong>, IEquatable<ulong>
     {
         private IntPtr me = new IntPtr();
 
         public mpz_t() { internals.mpir.__gmpz_init(ref me); }
+        public mpz_t(mpz_t x) { internals.mpir.__gmpz_init_set(ref me, ref x.me); }
         public mpz_t(long x) { internals.mpir.__gmpz_init_set_si(ref me, x); }
         public mpz_t(ulong x) { internals.mpir.__gmpz_init_set_ui(ref me, x); }
         public mpz_t(string x) { internals.mpir.__gmpz_init_set_str(ref me, x, 10); }
@@ -19,7 +20,11 @@ namespace mpir.core
         ~mpz_t() { internals.mpir.__gmpz_clear(ref me); }
 
         public int CompareTo(mpz_t other) => internals.mpir.__gmpz_cmp(ref me, ref other.me);
+        public int CompareTo(long other) => internals.mpir.__gmpz_cmp_si(ref me, other);
+        public int CompareTo(ulong other) => internals.mpir.__gmpz_cmp_ui(ref me, other);
         public bool Equals(mpz_t other) => CompareTo(other) == 0;
+        public bool Equals(long other) => CompareTo(other) == 0;
+        public bool Equals(ulong other) => CompareTo(other) == 0;
 
         public override string ToString()
         {
@@ -96,6 +101,25 @@ namespace mpir.core
             return res;
         }
         public static mpz_t operator *(ulong left, mpz_t right) => right * left;
+
+        public static mpz_t operator /(mpz_t left, mpz_t right)
+        {
+            var res = new mpz_t();
+            internals.mpir.__gmpz_fdiv_q(ref res.me, ref left.me, ref right.me);
+            return res;
+        }
+        public static mpz_t operator /(mpz_t left, ulong right)
+        {
+            var res = new mpz_t();
+            internals.mpir.__gmpz_fdiv_q_ui(ref res.me, ref left.me, right);
+            return res;
+        }
+        public static mpz_t operator /(mpz_t left, long right)
+        {
+            var res = new mpz_t(right);
+            internals.mpir.__gmpz_fdiv_q(ref res.me, ref left.me, ref res.me);
+            return res;
+        }
 
         public static mpz_t operator %(mpz_t left, mpz_t right)
         {
@@ -193,6 +217,12 @@ namespace mpir.core
         public static mpz_t_async operator *(long left, mpz_t_async right) => (mpz_t_async)(async () => (await right) * left);
         public static mpz_t_async operator *(mpz_t_async left, ulong right) => (mpz_t_async)(async () => (await left) * right);
         public static mpz_t_async operator *(ulong left, mpz_t_async right) => (mpz_t_async)(async () => (await right) * left);
+
+        public static mpz_t_async operator /(mpz_t_async left, mpz_t_async right) => (mpz_t_async)(async () => (await left) / (await right));
+        public static mpz_t_async operator /(mpz_t_async left, mpz_t right) => (mpz_t_async)(async () => (await left) / right);
+        public static mpz_t_async operator /(mpz_t left, mpz_t_async right) => (mpz_t_async)(async () => left / (await right));
+        public static mpz_t_async operator /(mpz_t_async left, ulong right) => (mpz_t_async)(async () => (await left) / right);
+        public static mpz_t_async operator /(mpz_t_async left, long right) => (mpz_t_async)(async () => (await left) / right);
 
         public static mpz_t_async operator %(mpz_t_async left, mpz_t_async right) => (mpz_t_async)(async () => (await left) % (await right));
         public static mpz_t_async operator %(mpz_t_async left, mpz_t right) => (mpz_t_async)(async () => (await left) % right);

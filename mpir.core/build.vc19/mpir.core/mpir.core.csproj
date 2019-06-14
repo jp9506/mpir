@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\mpir.core\mpir.cs" Link="mpir.cs" />
+    <Compile Include="..\..\mpir.core\mpir_mpz_t.cs" Link="mpir_mpz_t.cs" />
+    <Compile Include="..\..\mpir.core\mpir_mpf_t.cs" Link="mpir_mpf_t.cs" />
+    <Compile Include="..\..\mpir.core\mpf_t.cs" Link="mpf_t.cs" />
     <Compile Include="..\..\mpir.core\mpz_t.cs" Link="mpz_t.cs" />
   </ItemGroup>
 
