@@ -77,16 +77,18 @@ namespace mpir.core.internals
         #region pow
         [DllImport("mpir.dll")] public static extern void __gmpz_pow_ui(ref mpz_t rop, ref mpz_t op1, ulong op2);
         [DllImport("mpir.dll")] public static extern void __gmpz_ui_pow_ui(ref mpz_t rop, ulong op1, ulong op2);
+        [DllImport("mpir.dll")] public static extern void __gmpz_powm(ref mpz_t rop, ref mpz_t b, ref mpz_t e, ref mpz_t m);
+        [DllImport("mpir.dll")] public static extern void __gmpz_powm_ui(ref mpz_t rop, ref mpz_t b, ulong e, ref mpz_t m);
         #endregion
 
         #region addmul
-        [DllImport("mpir.dll")] public static extern void __mpz_addmul(ref mpz_t rop, ref mpz_t op1, ref mpz_t op2);
-        [DllImport("mpir.dll")] public static extern void __mpz_addmul_ui(ref mpz_t rop, ref mpz_t op1, ulong op2);
+        [DllImport("mpir.dll")] public static extern void __gmpz_addmul(ref mpz_t rop, ref mpz_t op1, ref mpz_t op2);
+        [DllImport("mpir.dll")] public static extern void __gmpz_addmul_ui(ref mpz_t rop, ref mpz_t op1, ulong op2);
         #endregion
 
         #region submul
-        [DllImport("mpir.dll")] public static extern void __mpz_submul(ref mpz_t rop, ref mpz_t op1, ref mpz_t op2);
-        [DllImport("mpir.dll")] public static extern void __mpz_submul_ui(ref mpz_t rop, ref mpz_t op1, ulong op2);
+        [DllImport("mpir.dll")] public static extern void __gmpz_submul(ref mpz_t rop, ref mpz_t op1, ref mpz_t op2);
+        [DllImport("mpir.dll")] public static extern void __gmpz_submul_ui(ref mpz_t rop, ref mpz_t op1, ulong op2);
         #endregion
 
         #region gcd
