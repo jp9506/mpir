@@ -402,7 +402,7 @@ void mftb_function(unsigned p[2]);
 #elif defined( _MSC_VER )
 #include <intrin.h>
 #pragma intrinsic(__rdtsc)
-__inline void speed_cyclecounter(unsigned long p[2]) { *(unsigned long long*)p = __rdtsc(); }
+__inline void speed_cyclecounter(unsigned p[2]) { *(unsigned long long*)p = __rdtsc(); }
 #endif
 
 double speed_cyclecounter_diff(const unsigned end[2], const unsigned start[2]);

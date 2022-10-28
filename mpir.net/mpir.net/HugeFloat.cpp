@@ -210,6 +210,13 @@ namespace MPIR
         auto f = dynamic_cast<MPTYPE^>(this);
         auto precision = IS_NULL(f) ? MPTYPE::DefaultPrecision : f->Precision;
 
+        WHEN_IS(2, a, IntegerExpression)
+        {
+            IN_SPECIFIC_CONTEXT(precision, this);
+            x2->AssignToInteger(context);
+            return MP(cmp_z)(CTXT(0), CTXTI(1));
+        }
+
         if(a->GetType() == mpir_ui::typeid)
         {
             IN_SPECIFIC_CONTEXT(precision, this);

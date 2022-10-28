@@ -156,7 +156,7 @@ mpz_n_pow_ui (mpz_ptr r, mp_srcptr bp, mp_size_t bsize, mpir_ui e)
   mp_size_t      rtwos_limbs, ralloc, rsize;
   int            rneg, i, cnt, btwos, r_bp_overlap;
   mp_limb_t      blimb, rl;
-  unsigned long  rtwos_bits;
+  mpir_ui        rtwos_bits;
 #if HAVE_NATIVE_mpn_mul_2
   mp_limb_t      blimb_low, rl_high;
 #else

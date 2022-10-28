@@ -4,40 +4,52 @@ Set up Visual Sudio to build a specified MPIR configuration
 Copyright (C) 2011, 2012, 2013, 2014 Brian Gladman
 '''
 
-from __future__ import print_function
 from operator import itemgetter
-from os import listdir, walk, unlink, makedirs, sep
-from os.path import split, splitext, isdir, relpath, join, exists
-from os.path import join, abspath, dirname, normpath, split
+from os import scandir, walk, unlink, makedirs, mkdir
+from os.path import join, split, splitext, isdir, isfile, exists
+from os.path import dirname, abspath, relpath, realpath
 from copy import deepcopy
 from sys import argv, exit, path
 from filecmp import cmp
 from shutil import copy
 from re import compile, search
 from collections import defaultdict
+from uuid import uuid4
 from time import sleep
 
 from _msvc_filters import gen_filter
 from _msvc_project import Project_Type, gen_vcxproj
 from _msvc_solution import msvc_solution
 
-try:
-  input = raw_input
-except NameError:
-  pass
+# copy from file ipath to file opath but avoid copying if
+# opath exists and is the same as ipath (this is to avoid
+# triggering an unecessary rebuild).
 
-vs_version = 19
+def write_f(ipath, opath):
+  if exists(ipath) and not isdir(ipath):
+    if exists(opath) and isfile(opath) and cmp(ipath, opath):
+      return
+    dp, f = split(opath)
+    try:
+      mkdir(dp)
+    except FileExistsError:
+      pass
+    copy(ipath, opath)
+
+vs_version = 22
 if len(argv) > 1:
   vs_version = int(argv[1])
 
 solution_name = 'mpir.sln'
 build_dir_name = 'vs{0:d}'.format(vs_version)
 
-build_root_dir = dirname(__file__)
+build_root_dir = dirname(realpath(__file__))
 mpir_root_dir, build_root_name  = split(build_root_dir)
 solution_dir = join(build_root_dir, build_dir_name)
-
 path.append(solution_dir)
+
+write_f(join(build_root_dir, f'version_info{vs_version}.py'),
+                            join(solution_dir, 'version_info.py'))
 from version_info import vs_info
 
 if len(argv) > 2:
@@ -62,17 +74,6 @@ exclude_file_list = ('config.guess', 'cfg', 'getopt', 'getrusage',
                      'gettimeofday', 'cpuid', 'obsolete', 'win_timing',
                      'gmp-mparam', 'tal-debug', 'tal-notreent', 'new_fft',
                      'new_fft_with_flint', 'compat', 'udiv_w_sdiv')
-
-# copy from file ipath to file opath but avoid copying if
-# opath exists and is the same as ipath (this is to avoid
-# triggering an unecessary rebuild).
-
-def write_f(ipath, opath):
-  if exists(ipath) and not isdir(ipath):
-    if exists(opath):
-      if isdir(opath) or cmp(ipath, opath):
-        return
-    copy(ipath, opath)
 
 # append a file (ipath) to an existing file (opath)
 
@@ -127,10 +128,10 @@ def copy_files(file_list, in_dir, out_dir):
 def find_asm(path, cf_list):
   d = dict()
   for root, dirs, files in walk(path):
-    if '.svn' in dirs:                  # ignore SVN directories
-      dirs.remove('.git')
-    if 'fat' in dirs:                   # ignore fat directory
-      dirs.remove('fat')
+    # ignore repository directories and the fat directory
+    for rd in ('.svn', '.git', '.vs', 'fat'):
+      if rd in dirs:
+        dirs.remove(rd)
     relp = relpath(root, path)          # path from asm root
     relr = relpath(root, mpir_root_dir) # path from MPIR root
     if relp == '.':                     # set C files as default
@@ -185,11 +186,11 @@ def find_src(dir_list):
   di = {'.h': 0, '.c': 1, '.cc': 2, '.cpp': 2, '.asm': 3, '.as': 3}
   list = [[], [], [], []]
   for d in dir_list:
-    for f in listdir(join(mpir_root_dir, d)):
-      if f == '.svn':
-        continue                        # ignore SVN directories
-      if not isdir(f):
-        n, x = splitext(f)              # split into name + extension
+    for f in scandir(join(mpir_root_dir, d)):
+      if f.name in {'.svn', '.git', '.vs'}:
+        continue                        # ignore repository directories
+      if f.is_file():
+        n, x = splitext(f.name)         # split into name + extension
         if x in di and not n in exclude_file_list:
           list[di[x]] += [(n, x, d)]    # if of the right type and is
   for x in list:                        # not in the exclude list

@@ -32,11 +32,16 @@ namespace MPIR.Tests.HugeFloatTests
         public static void Init(TestContext context)
         {
             AlmostOne = new HugeFloat(0.99999);
+        }
+
+        [TestInitialize]
+        public void TestInit()
+        {
             HugeFloat.DefaultPrecision = 128;
         }
 
-        [ClassCleanup]
-        public static void Cleanup()
+        [TestCleanup]
+        public void Cleanup()
         {
             HugeFloat.DefaultPrecision = 64;
         }
@@ -107,12 +112,36 @@ namespace MPIR.Tests.HugeFloatTests
             using (var a = new HugeFloat())
             {
                 a.SetTo(-123.25);
-                var exp = 0;
+                var exp = Platform.Si(0, 0);
                 double c = a.ToDouble(out exp);
                 Assert.IsTrue(c.Equals(-0.962890625));
                 Assert.AreEqual(7L, exp);
                 Assert.IsTrue(a.Equals(-123.25));
                 Assert.AreEqual("-0.12325@3", a.ToString());
+            }
+        }
+
+        [TestMethod]
+        public void FloatFromDoubleWithLargeExponent()
+        {
+            using (var a = new HugeFloat())
+            {
+                var exp = Platform.Si(0, 0);
+                double mantissa;
+
+                a.SetTo(3);
+                a.Value = a << Platform.Ui(0x1F65432FD9, 0x7F654329);
+
+                mantissa = a.ToDouble(out exp);
+                Assert.IsTrue(mantissa.Equals(0.75));
+                Assert.AreEqual(Platform.Si(0x1F65432FDB, 0x7F65432B), exp);
+
+                a.SetTo(-3);
+                a.Value = a >> Platform.Ui(0x1F65432FDD, 0x7F65432D);
+
+                mantissa = a.ToDouble(out exp);
+                Assert.IsTrue(mantissa.Equals(-0.75));
+                Assert.AreEqual(Platform.Si(-0x1F65432FDB, -0x7F65432B), exp);
             }
         }
 
@@ -196,12 +225,12 @@ namespace MPIR.Tests.HugeFloatTests
             using(var a = new HugeFloat())
             {
                 a.SetTo(-123.45e20);
-                var exp = 0;
+                var exp = Platform.Si(0, 0);
                 var zillion = Platform.Si(10000000000, 1000000000);
                 a.Value = a + a;
                 double c = a.ToDouble(out exp);
 
-                Assert.AreEqual(75, exp);
+                Assert.AreEqual(Platform.Si(75, 75), exp);
                 c *= Math.Pow(2, exp);
 
                 Assert.IsTrue(a + zillion >= c);

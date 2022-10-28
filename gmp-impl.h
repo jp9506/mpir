@@ -3840,7 +3840,7 @@ struct gcdext_ctx
 };
 
 #define mpn_gcdext_hook __MPN (gcdext_hook)
-gcd_subdiv_step_hook mpn_gcdext_hook;
+__GMP_DECLSPEC gcd_subdiv_step_hook mpn_gcdext_hook;
 
 #define MPN_GCDEXT_LEHMER_N_ITCH(n) (4*(n) + 3)
 

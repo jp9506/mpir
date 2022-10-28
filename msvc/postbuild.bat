@@ -5,14 +5,23 @@ rem %2 = last two digits of the Visual Studio version number (e.g. 17)
 set vs_ver=%2
 set str=%~1
 
-rem delete anything from the path before 'msvc'
+rem delete anything from the path before the FINAL 'msvc'
 :dele
 set str=%str:~1%
 set str2=%str:~0,4%
-if "%str2%" NEQ "msvc" goto dele
+
+if "%str%" EQU "" (
+  goto dele_done
+) else if "%str2%" EQU "msvc" (
+  set str_confirmed=%str%
+)
+goto dele
+:dele_done
+set str=%str_confirmed%
+echo "Final subpath %str%"
 
 rem we now have: msvc.\vs<nn>\<project_directory>\<win32|x64>\<debug|release>\mpir.<lib|dll>
-rem extract: project_directory, platform (plat=<win32|x64>), configuration (conf=<debug|release>) and file name  
+rem extract: project_directory, platform (plat=<win32|x64>), configuration (conf=<debug|release>) and file name
 
 set file=
 for /f "tokens=1,2,3,4,5,6 delims=\" %%a in ("%str%") do set tloc=%%c&set plat=%%d&set conf=%%e&set file=%%f
@@ -38,7 +47,7 @@ set bin_dir="..\%extn%\%plat%\%conf%\"
 set hdr_dir="..\%extn%\%plat%\%conf%\"
 
 rem output parametrers for the MPIR tests
-if /i "%filename%" EQU "mpirxx" goto skip 
+if /i "%filename%" EQU "mpirxx" goto skip
 echo (set ldir=%loc%)   > output_params.bat
 echo (set libr=%extn%) >> output_params.bat
 echo (set plat=%plat%) >> output_params.bat
@@ -55,7 +64,7 @@ exit /b 0
 rem copy binaries to final bin_dirination directory
 rem %1 = target (build output) directory
 rem %2 = binary destination directory
-rem %3 = configuration (debug/release) 
+rem %3 = configuration (debug/release)
 rem %4 = library (lib/dll)
 rem %5 = file name
 :copyb
@@ -65,7 +74,7 @@ if "%4" EQU "dll" (
 	copy %1mpir.lib %2mpir.lib > nul 2>&1
 	if exist %1mpir.pdb (copy %1mpir.pdb %2mpir.pdb  > nul 2>&1)
 ) else if "%4" EQU "lib" (
-    if "%5" EQU "mpir" ( 
+    if "%5" EQU "mpir" (
   	    if exist %1mpir.lib (
         copy %1mpir.lib %2mpir.lib > nul 2>&1
 	    if exist %1mpir.pdb (copy %1mpir.pdb %2mpir.pdb > nul 2>&1)

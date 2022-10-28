@@ -30,8 +30,8 @@ namespace MPIR.Tests.HugeFloatTests
     [TestClass]
     public class ExpressionTests
     {
-        [ClassInitialize]
-        public static void Setup(TestContext context)
+        [TestInitialize]
+        public void Setup()
         {
             HugeFloat.DefaultPrecision = 64;
         }

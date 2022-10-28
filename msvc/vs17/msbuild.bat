@@ -6,25 +6,29 @@ rem %4 = configuration (Release|Debug)
 rem %5 = Windows SDK Version
 rem %6 = build tests (|+tests)
 
+setlocal ENABLEDELAYEDEXPANSION
+
 rem Visual Studio version (2013, 2015 or 2017)
 set vs_version=2017
 
 rem find the MSBUILD installation directory
-if "%vs_version%" EQU "2013" (
-  set msbdir="C:\Program Files (x86)\MSBuild\12.0\Bin"
+if NOT DEFINED msbdir (
+  if "%vs_version%" EQU "2013" (
+    set msbdir="C:\Program Files (x86)\MSBuild\12.0\Bin"
   ) else if "%vs_version%" EQU "2015" (
-  set msbdir="C:\Program Files (x86)\MSBuild\14.0\Bin"
+    set msbdir="C:\Program Files (x86)\MSBuild\14.0\Bin"
   ) else if "%vs_version%" EQU "2017" (
-  set vsw_exe="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
-  for /f "usebackq tokens=*" %%i in (`%vsw_exe% -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) do (
-  set InstallDir=%%i
-  )
-  if exist "%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe" (
-    set msbdir="%InstallDir%\MSBuild\15.0\Bin"
-  )    
+    set vsw_exe="%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+    for /f "usebackq tokens=*" %%i in (`!vsw_exe! -latest -products * -requires Microsoft.Component.MSBuild -property installationPath`) do (
+      set InstallDir=%%i
+    )
+    if exist "!InstallDir!\MSBuild\15.0\Bin\MSBuild.exe" (
+      set msbdir="!InstallDir!\MSBuild\15.0\Bin"
+    )
   ) else (
-  echo "Visual Studio %vs_version% is not supported" & exit /b %errorlevel%
+    echo "Visual Studio %vs_version% is not supported" & exit /b %errorlevel%
   )
+)
 
 if "%4" NEQ "" if "%3" NEQ "" if "%2" NEQ "" if "%1" NEQ "" goto cont
 call :get_architectures -
@@ -39,24 +43,27 @@ if /i "%2" EQU "DLL" (set libp=dll) else (if /i "%2" EQU "LIB" (set libp=lib) el
 if /i "%3" EQU "x64" (set plat=x64) else (if /i "%3" EQU "Win32" (set plat=win32) else (call :seterr & echo ERROR: platform is "Win32" or "x64" ^(not "%3"^) & exit /b %errorlevel%))
 if /i "%4" EQU "Debug" (set conf=Debug) else (if /i "%4" EQU "Release" (set conf=Release) else (call :seterr & echo ERROR: configuration is "Release" or "Debug" ^(not "%4"^) & exit /b %errorlevel%))
 if /i "%5" NEQ "" if "%5" EQU "+tests" (set run_tests=y) else (set win_sdk=%5)
-if /i "%6" NEQ "" if "%6" EQU "+tests" (set run_tests=y) 
+if /i "%6" NEQ "" if "%6" EQU "+tests" (set run_tests=y)
 
 set src=%libp%_mpir_%1
 
-rem This is the Visual Studio build directory (within the MPIR directory) 
+rem This is the Visual Studio build directory (within the MPIR directory)
 set srcdir=.
 
-echo %msbdir%\msbuild.exe /p:Platform=%plat% /p:Configuration=%conf% /p:"Windows%20SDK%20Version=%win_sdk%" %srcdir%\%src%\%src%.vcxproj
-%msbdir%\msbuild.exe /p:Platform=%plat% /p:Configuration=%conf% /p:"Windows%20SDK%20Version=%win_sdk%" %srcdir%\%src%\%src%.vcxproj
+echo !msbdir!\msbuild.exe /p:Platform=%plat% /p:Configuration=%conf% /p:"Windows%20SDK%20Version=%win_sdk%" %srcdir%\%src%\%src%.vcxproj
+!msbdir!\msbuild.exe /p:Platform=%plat% /p:Configuration=%conf% /p:"Windows%20SDK%20Version=%win_sdk%" %srcdir%\%src%\%src%.vcxproj
+if %errorlevel% NEQ 0 (echo ERROR: msbuild failed for main project with exit code %errorlevel% & exit /b %errorlevel%)
 
 if /i "%libp%" == "LIB" (
-  %msbdir%\msbuild.exe /p:Platform=%plat% /p:Configuration=%conf% /p:"Windows%20SDK%20Version=%win_sdk%" %srcdir%\lib_mpir_cxx\lib_mpir_cxx.vcxproj
+  !msbdir!\msbuild.exe /p:Platform=%plat% /p:Configuration=%conf% /p:"Windows%20SDK%20Version=%win_sdk%" %srcdir%\lib_mpir_cxx\lib_mpir_cxx.vcxproj
+  if %errorlevel% NEQ 0 (echo ERROR: msbuild failed for lib project with exit code %errorlevel% & exit /b %errorlevel%)
 )
 
 if /i "%run_tests%" NEQ "" (
   for /d %%d in (.\mpir-tests\*) do (
     for %%f in (%%d\*.vcxproj) do (
-      %msbdir%\msbuild.exe /property:SolutionDir=..\..\ /property:OutDir=..\..\%plat%\%conf%\ /p:Platform=%plat% /p:Configuration=%conf% /p:"Windows%20SDK%20Version=%win_sdk%" %%f
+      !msbdir!\msbuild.exe /property:SolutionDir=..\..\ /property:OutDir=..\..\%plat%\%conf%\ /p:Platform=%plat% /p:Configuration=%conf% /p:"Windows%20SDK%20Version=%win_sdk%" %%f
+      if %errorlevel% NEQ 0 (echo ERROR: msbuild failed for test project %%f with exit code %errorlevel% & exit /b %errorlevel%)
     )
   )
 )

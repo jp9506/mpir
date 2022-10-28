@@ -2,6 +2,7 @@
 # generate vcxproj file
 
 from os.path import normpath, join, split, relpath
+from os import access, F_OK
 from enum import IntEnum
 
 class Project_Type(IntEnum):
@@ -64,13 +65,13 @@ def vcx_cpp_props(outf):
 '''
   outf.write(f1)
 
-def vcx_extensions(outf):
+def vcx_extensions(outf, dir):
 
   f1 = r'''  <ImportGroup Label="ExtensionSettings">
-    <Import Project="..\..\vsyasm.props" />
+    <Import Project="{0:s}vsyasm.props" />
   </ImportGroup>
 '''
-  outf.write(f1)
+  outf.write(f1.format(dir))
 
 def vcx_user_props(plat, proj_type, outf):
 
@@ -247,7 +248,7 @@ def gen_vcxproj(path, root_dir, proj_name, guid, config, plat, proj_type,
   f3 = r'''  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 '''
   f4 = r'''  <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\vsyasm.targets" />
+    <Import Project="{0:s}vsyasm.targets" />
     </ImportGroup>
 '''
 
@@ -258,6 +259,8 @@ def gen_vcxproj(path, root_dir, proj_name, guid, config, plat, proj_type,
 '''
 
   relp = split(relpath(root_dir, path))[0] + '\\'
+  vsy_path = split(path)[0] + '\\..\\vsyasm.targets'
+  dir = '..\\' if access(vsy_path, F_OK) else '..\\..\\'
   with open(path, 'w') as outf:
     outf.write(f1.format(vs_info['vcx_tool']))
     vcx_proj_cfg(plat, outf)
@@ -266,7 +269,7 @@ def gen_vcxproj(path, root_dir, proj_name, guid, config, plat, proj_type,
     vcx_library_type(plat, proj_type, vs_info, outf)
     vcx_cpp_props(outf)
     if af_list:
-      vcx_extensions(outf)
+      vcx_extensions(outf, dir)
     vcx_user_props(plat, proj_type, outf)
     outf.write(f2)
     vcx_target_name_and_dirs(proj_name, plat, proj_type, outf)
@@ -278,6 +281,6 @@ def gen_vcxproj(path, root_dir, proj_name, guid, config, plat, proj_type,
     vcx_a_items(af_list, relp, outf)
     outf.write(f3)
     if af_list:
-      outf.write(f4)
+      outf.write(f4.format(dir))
     outf.write(f5)
 

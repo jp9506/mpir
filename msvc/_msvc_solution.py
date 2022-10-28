@@ -93,10 +93,10 @@ class msvc_solution(object):
         m = re_acfg.search(ln)
         if m:
           g = m.group(1)
+          if not g in self.g2acfg.keys():
+            self.g2acfg[g] = [0, 1, 2, 3]
           ix = 2 * (m.group(2) == 'Release') + (m.group(3) == 'x64')
           ac = 2 * (m.group(4) == 'Release') + (m.group(5) == 'x64')
-          if not g in self.g2acfg.keys():
-            self.g2acfg[g] = [0] * 4
           self.g2acfg[g][ix] = ac
 
     for g in self.g2proj:

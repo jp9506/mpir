@@ -158,6 +158,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <AdditionalIncludeDirectories>$(MPDIR);..\..\..\;..\..\..\..\tests\</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(SolutionDir)$(IntDir)lib_speed.lib;%(AdditionalDependencies)</AdditionalDependencies>

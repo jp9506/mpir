@@ -1,6 +1,7 @@
+
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28705.295
+# Visual Studio 19
+VisualStudioVersion = 19.20.27027.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib_mpir_cxx", "lib_mpir_cxx\lib_mpir_cxx.vcxproj", "{B265237A-08C6-4BC3-A582-2B480F27C987}"
 EndProject
@@ -18,21 +19,18 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B265237A-08C6-4BC3-A582-2B480F27C987}.Debug|Win32.ActiveCfg = Debug|Win32
 		{B265237A-08C6-4BC3-A582-2B480F27C987}.Debug|x64.ActiveCfg = Debug|x64
-		{B265237A-08C6-4BC3-A582-2B480F27C987}.Release|Win32.ActiveCfg = Debug|Win32
+		{B265237A-08C6-4BC3-A582-2B480F27C987}.Release|Win32.ActiveCfg = Release|Win32
 		{B265237A-08C6-4BC3-A582-2B480F27C987}.Release|x64.ActiveCfg = Release|x64
 		{C1DEEFFD-CA22-481B-9F4E-436709F9C6AE}.Debug|Win32.ActiveCfg = Debug|Win32
 		{C1DEEFFD-CA22-481B-9F4E-436709F9C6AE}.Debug|x64.ActiveCfg = Debug|x64
-		{C1DEEFFD-CA22-481B-9F4E-436709F9C6AE}.Release|Win32.ActiveCfg = Debug|Win32
+		{C1DEEFFD-CA22-481B-9F4E-436709F9C6AE}.Release|Win32.ActiveCfg = Release|Win32
 		{C1DEEFFD-CA22-481B-9F4E-436709F9C6AE}.Release|x64.ActiveCfg = Release|x64
 		{2ACEC5D2-F039-4A7F-B9D6-0025BAFD667B}.Debug|Win32.ActiveCfg = Debug|Win32
 		{2ACEC5D2-F039-4A7F-B9D6-0025BAFD667B}.Debug|x64.ActiveCfg = Debug|x64
-		{2ACEC5D2-F039-4A7F-B9D6-0025BAFD667B}.Release|Win32.ActiveCfg = Debug|Win32
+		{2ACEC5D2-F039-4A7F-B9D6-0025BAFD667B}.Release|Win32.ActiveCfg = Release|Win32
 		{2ACEC5D2-F039-4A7F-B9D6-0025BAFD667B}.Release|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {E3E498CC-6B6A-4DBC-BECA-9D4E5F9A8ED7}
 	EndGlobalSection
 EndGlobal

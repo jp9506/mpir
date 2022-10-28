@@ -468,6 +468,16 @@ namespace MPIR
             return -MP(cmp_z)(CTXT(0), CTXTI(1));
         }
 
+        WHEN_IS(3, a, FloatExpression)
+        {
+            auto const f = dynamic_cast<HugeFloat^>(a);
+            context.FloatPrecision = IS_NULL(f) ? HugeFloat::DefaultPrecision : f->Precision;
+
+            x3->AssignToFloat(context);
+            AssignToInteger(context);
+            return -mpf_cmp_z(CTXTF(0), CTXTI(1));
+        }
+
         if (a->GetType() == mpir_ui::typeid)
         {
             AssignToInteger(context);

@@ -7390,8 +7390,9 @@ Operator @code{^} serves dual purposes: when the right operand is a single limb,
 if the right operand is an @code{IntegerExpression} it performs a bitwise XOR.
 
 Comparison operators (@code{==}, @code{!=}, @code{<}, @code{<=}, @code{>}, @code{>=}) accept @code{IntegerExpression},
-single-limb, or double arguments, but do not accept @code{RationalExpression} because that would require an awkward explicit cast
+single-limb, or double arguments, but do not accept @code{RationalExpression} or @code{FloatExpression} because that would require an awkward explicit cast
 when comparing with null.
+Use the @code{CompareTo(object)} method for cross-comparisons, which does accept both @code{RationalExpression} and @code{FloatExpression}.
 
 @deftypefn Method int CompareTo (IntegerExpression @var{a})
 @deftypefnx Method bool Equals (IntegerExpression @var{a})
@@ -7725,8 +7726,9 @@ and the bitwise operators (@code{&}, @code{|}, @code{^}, @code{~}).
 Operator @code{^} raises the source number to the specified power.
 
 Comparison operators (@code{==}, @code{!=}, @code{<}, @code{<=}, @code{>}, @code{>=}) accept @code{RationalExpression},
-single-limb, or double arguments, but do not accept integer or float expressions because that would require an awkward explicit cast
-when comparing with null.  Use the @code{CompareTo(object)} method for cross-comparisons.
+single-limb, or double arguments, but do not accept @code{IntegerExpression} or @code{FloatExpression} because that would require an awkward explicit cast
+when comparing with null.
+Use the @code{CompareTo(object)} method for cross-comparisons with integers.  Direct comparisons between rationals and floats are not available in MPIR.
 
 @deftypefn Method int CompareTo (RationalExpression @var{a})
 @deftypefnx Method bool Equals (RationalExpression @var{a})
@@ -7940,8 +7942,9 @@ The modulo operator (@code{%}) and the bitwise operators (@code{&}, @code{|}, @c
 Operator @code{^} raises the source number to the specified power.
 
 Comparison operators (@code{==}, @code{!=}, @code{<}, @code{<=}, @code{>}, @code{>=}) accept @code{FloatExpression},
-single-limb, or double arguments, but do not accept integer or rational expressions
+single-limb, or double arguments, but do not accept @code{RationalExpression} or @code{IntegerExpression}
 because that would require an awkward explicit cast when comparing with null.
+Use the @code{CompareTo(object)} method for cross-comparisons with integers.  Direct comparisons between rationals and floats are not available in MPIR.
 
 @deftypefn Method int CompareTo (FloatExpression @var{a})
 @deftypefnx Method bool Equals (FloatExpression @var{a})

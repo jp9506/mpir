@@ -65,14 +65,14 @@ namespace MPIR.Tests.HugeFloatTests
     [TestClass]
     public class Arithmetic
     {
-        [ClassInitialize]
-        public static void Setup(TestContext context)
+        [TestInitialize]
+        public void Setup()
         {
             HugeFloat.DefaultPrecision = 128;
         }
 
-        [ClassCleanup]
-        public static void Cleanup()
+        [TestCleanup]
+        public void Cleanup()
         {
             HugeFloat.DefaultPrecision = 64;
         }

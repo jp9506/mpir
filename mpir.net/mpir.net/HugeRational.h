@@ -49,6 +49,7 @@ using namespace System::Runtime::InteropServices;
 #define MPEXPR(x) LIT(MPTYPE_NAME)##x##Expression
 #define CTXT(x) context.RationalArgs[x]
 #define CTXTI(x) context.IntArgs[x]
+#define CTXTF(x) context.FloatArgs[x]
 #define ASSIGN_TO CONCAT(AssignTo, LIT(MPTYPE_NAME))
 #define SET_CONTEXT_PRECISION
 #include "ExpressionMacros.h"

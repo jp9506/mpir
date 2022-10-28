@@ -47,7 +47,7 @@ mpf_get_2exp_d (double *r, mpf_srcptr src)
 
   *r = mpn_get_d (ptr, abs_size, size,
                     (long) - (abs_size * GMP_NUMB_BITS - cnt));
-  return EXP(src) * GMP_NUMB_BITS - cnt;
+  return (mpir_si)EXP(src) * GMP_NUMB_BITS - cnt;
 }
 
 double
